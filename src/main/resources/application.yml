@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: demo-java-glowroot
+
+  datasource:
+    # Para execução local fora do Docker, ajuste host/porta conforme seu Postgres
+    url: jdbc:postgresql://localhost:5432/demo
+    username: demo
+    password: demo
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+

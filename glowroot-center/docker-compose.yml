@@ -1,0 +1,46 @@
+services:
+  cassandra:
+    image: cassandra:3.11
+    container_name: glowroot-cassandra
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_START_RPC=true
+      - MAX_HEAP_SIZE=512M
+      - HEAP_NEWSIZE=128M
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe keyspaces;' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+  glowroot-central:
+    build:
+      context: .
+    container_name: glowroot-central
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+    volumes:
+      - glowroot-central-data:/usr/share/glowroot-central/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4000/ > /dev/null 2>&1 || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  cassandra-data:
+  glowroot-central-data:
+
+networks:
+  default:
+    name: glowroot-observability
+
+

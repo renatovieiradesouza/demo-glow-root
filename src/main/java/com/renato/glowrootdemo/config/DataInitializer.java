@@ -1,0 +1,33 @@
+package com.renato.glowrootdemo.config;
+
+import java.util.List;
+
+import com.renato.glowrootdemo.user.User;
+import com.renato.glowrootdemo.user.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class DataInitializer {
+
+    private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
+
+    @Bean
+    CommandLineRunner initUsers(UserRepository userRepository) {
+        return args -> {
+            if (userRepository.count() == 0) {
+                log.info("Seeding sample users into PostgreSQL...");
+                userRepository.saveAll(List.of(
+                        new User("Alice", "alice@example.com"),
+                        new User("Bob", "bob@example.com"),
+                        new User("Carol", "carol@example.com")
+                ));
+            }
+        };
+    }
+}
+
+
