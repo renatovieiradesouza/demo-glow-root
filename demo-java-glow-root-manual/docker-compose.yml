@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  postgres-manual:
+    image: postgres:16-alpine
+    container_name: demo-postgres-manual
+    environment:
+      POSTGRES_DB: demo_manual
+      POSTGRES_USER: demo_manual
+      POSTGRES_PASSWORD: demo_manual
+    volumes:
+      - postgres-manual-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo_manual -d demo_manual || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  app-manual:
+    build:
+      context: .
+    container_name: demo-java-glowroot-manual
+    depends_on:
+      postgres-manual:
+        condition: service_healthy
+    environment:
+      # PostgreSQL dedicado para o projeto de instrumentação manual
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-manual:5432/demo_manual
+      SPRING_DATASOURCE_USERNAME: demo_manual
+      SPRING_DATASOURCE_PASSWORD: demo_manual
+    ports:
+      - "8081:8081"
+
+volumes:
+  postgres-manual-data:
+
+networks:
+  default:
+    name: glowroot-observability
+    external: true
+
+
