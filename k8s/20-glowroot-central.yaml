@@ -8,7 +8,7 @@ data:
     glowroot.collector.address=0.0.0.0:8181
     glowroot.ui.bind.address=0.0.0.0
     glowroot.ui.port=4000
-    glowroot.storage.cassandra.contactPoints=cassandra-client.observability.svc.cluster.local
+    glowroot.storage.cassandra.contactPoints=cassandra.observability.svc.cluster.local
     glowroot.storage.cassandra.keyspace=glowroot
     glowroot.storage.cassandra.consistencyLevel=QUORUM
     glowroot.storage.cassandra.username=
@@ -63,12 +63,9 @@ spec:
               name: ui
             - containerPort: 8181
               name: agent
-          env:
-            - name: GLOWROOT_CENTRAL_DIR
-              value: /glowroot
           volumeMounts:
             - name: config
-              mountPath: /glowroot/glowroot-central.properties
+              mountPath: /usr/share/glowroot-central/glowroot-central.properties
               subPath: glowroot-central.properties
             - name: logs
               mountPath: /usr/share/glowroot-central/logs
