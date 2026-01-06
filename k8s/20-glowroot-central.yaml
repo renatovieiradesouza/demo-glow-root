@@ -9,6 +9,7 @@ data:
     ui.bindAddress=0.0.0.0
     ui.port=4000
     log.dir=/usr/share/glowroot-central/logs
+    # Formato novo (cassandra.*)
     cassandra.contactPoints=cassandra-client.observability.svc.cluster.local
     cassandra.port=9042
     cassandra.keyspace=glowroot
@@ -17,6 +18,12 @@ data:
     cassandra.username=
     cassandra.password=
     internal.telemetry.enabled=false
+    # Compat: formato antigo (glowroot.storage.cassandra.*) para garantir leitura
+    glowroot.storage.cassandra.contactPoints=cassandra-client.observability.svc.cluster.local
+    glowroot.storage.cassandra.port=9042
+    glowroot.storage.cassandra.keyspace=glowroot
+    glowroot.storage.cassandra.consistencyLevel=QUORUM
+    glowroot.storage.cassandra.localDc=dc1
 ---
 apiVersion: v1
 kind: Service
