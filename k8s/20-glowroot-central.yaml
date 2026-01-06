@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: glowroot-config
+  namespace: observability
+data:
+  glowroot-central.properties: |
+    glowroot.collector.address=0.0.0.0:8181
+    glowroot.ui.bind.address=0.0.0.0
+    glowroot.ui.port=4000
+    glowroot.storage.cassandra.contactPoints=cassandra-client.observability.svc.cluster.local
+    glowroot.storage.cassandra.keyspace=glowroot
+    glowroot.storage.cassandra.consistencyLevel=QUORUM
+    glowroot.storage.cassandra.username=
+    glowroot.storage.cassandra.password=
+    glowroot.internal.telemetry.enabled=false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: glowroot-central
+  namespace: observability
+spec:
+  type: ClusterIP
+  selector:
+    app: glowroot-central
+  ports:
+    - name: ui
+      port: 4000
+      targetPort: 4000
+    - name: agent
+      port: 8181
+      targetPort: 8181
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glowroot-central
+  namespace: observability
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: glowroot-central
+  template:
+    metadata:
+      labels:
+        app: glowroot-central
+    spec:
+      securityContext:
+        fsGroup: 1000
+      containers:
+        - name: glowroot-central
+          image: glowroot/glowroot-central:0.13.9
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 4000
+              name: ui
+            - containerPort: 8181
+              name: agent
+          env:
+            - name: GLOWROOT_CENTRAL_DIR
+              value: /glowroot
+          volumeMounts:
+            - name: config
+              mountPath: /glowroot/glowroot-central.properties
+              subPath: glowroot-central.properties
+          readinessProbe:
+            httpGet:
+              path: /
+              port: ui
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /
+              port: ui
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+      restartPolicy: Always
+      volumes:
+        - name: config
+          configMap:
+            name: glowroot-config
+
