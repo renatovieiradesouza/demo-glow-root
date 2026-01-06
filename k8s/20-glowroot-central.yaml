@@ -63,12 +63,15 @@ spec:
               name: ui
             - containerPort: 8181
               name: agent
+          env:
+            - name: GLOWROOT_CENTRAL_DIR
+              value: /glowroot
           volumeMounts:
             - name: config
-              mountPath: /usr/share/glowroot-central/glowroot-central.properties
+              mountPath: /glowroot/glowroot-central.properties
               subPath: glowroot-central.properties
             - name: logs
-              mountPath: /usr/share/glowroot-central/logs
+              mountPath: /glowroot/logs
           readinessProbe:
             httpGet:
               path: /
