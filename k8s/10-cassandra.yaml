@@ -49,6 +49,11 @@ spec:
     spec:
       securityContext:
         fsGroup: 999
+      tolerations:
+        - key: "infra"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
       containers:
         - name: cassandra
           image: cassandra:4.1
@@ -128,8 +133,9 @@ spec:
       spec:
         accessModes:
           - ReadWriteOnce
+        volumeMode: Filesystem
         resources:
           requests:
             storage: 20Gi
-        storageClassName: ""  # set explicitly if your cluster requires a name
+        storageClassName: openebs-replicated
 

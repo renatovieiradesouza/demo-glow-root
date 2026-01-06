@@ -49,6 +49,11 @@ spec:
     spec:
       securityContext:
         fsGroup: 1000
+      tolerations:
+        - key: "infra"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
       containers:
         - name: glowroot-central
           image: glowroot/glowroot-central:0.13.9
