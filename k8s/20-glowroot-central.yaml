@@ -56,7 +56,7 @@ spec:
           effect: "NoSchedule"
       containers:
         - name: glowroot-central
-          image: glowroot/glowroot-central:0.13.9
+          image: glowroot/glowroot-central:0.14.4
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4000
@@ -70,6 +70,8 @@ spec:
             - name: config
               mountPath: /glowroot/glowroot-central.properties
               subPath: glowroot-central.properties
+            - name: logs
+              mountPath: /usr/share/glowroot-central/logs
           readinessProbe:
             httpGet:
               path: /
@@ -102,4 +104,6 @@ spec:
         - name: config
           configMap:
             name: glowroot-config
+        - name: logs
+          emptyDir: {}
 
