@@ -14,7 +14,7 @@ data:
     cassandra.port=9042
     cassandra.keyspace=glowroot
     cassandra.consistencyLevel=QUORUM
-    cassandra.localDc=dc1
+    cassandra.localDatacenter=dc1
     cassandra.username=
     cassandra.password=
     internal.telemetry.enabled=false
@@ -23,7 +23,7 @@ data:
     glowroot.storage.cassandra.port=9042
     glowroot.storage.cassandra.keyspace=glowroot
     glowroot.storage.cassandra.consistencyLevel=QUORUM
-    glowroot.storage.cassandra.localDc=dc1
+    glowroot.storage.cassandra.localDatacenter=dc1
 ---
 apiVersion: v1
 kind: Service
