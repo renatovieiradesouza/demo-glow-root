@@ -5,16 +5,17 @@ metadata:
   namespace: observability
 data:
   glowroot-central.properties: |
-    glowroot.collector.address=0.0.0.0:8181
-    glowroot.ui.bind.address=0.0.0.0
-    glowroot.ui.port=4000
-    glowroot.log.dir=/usr/share/glowroot-central/logs
-    glowroot.storage.cassandra.contactPoints=cassandra-client.observability.svc.cluster.local
-    glowroot.storage.cassandra.keyspace=glowroot
-    glowroot.storage.cassandra.consistencyLevel=QUORUM
-    glowroot.storage.cassandra.username=
-    glowroot.storage.cassandra.password=
-    glowroot.internal.telemetry.enabled=false
+    collector.address=0.0.0.0:8181
+    ui.bindAddress=0.0.0.0
+    ui.port=4000
+    log.dir=/usr/share/glowroot-central/logs
+    cassandra.contactPoints=cassandra-client.observability.svc.cluster.local
+    cassandra.port=9042
+    cassandra.keyspace=glowroot
+    cassandra.consistencyLevel=QUORUM
+    cassandra.username=
+    cassandra.password=
+    internal.telemetry.enabled=false
 ---
 apiVersion: v1
 kind: Service
