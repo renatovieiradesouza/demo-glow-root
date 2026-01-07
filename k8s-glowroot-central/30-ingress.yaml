@@ -11,7 +11,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: glowroot.finchaokucoes.com.br
+    - host: glowroot.finchsolucoes.com.br
       http:
         paths:
           - path: /
@@ -23,20 +23,5 @@ spec:
                   name: ui
   tls:
     - hosts:
-        - glowroot.finchaokucoes.com.br
+        - glowroot.finchsolucoes.com.br
       secretName: finch-tls-cert
----
-apiVersion: cert-manager.io/v1
-kind: Certificate
-metadata:
-  name: glowroot-cert
-  namespace: observability
-spec:
-  secretName: glowroot-tls
-  commonName: glowroot.finchaokucoes.com.br
-  dnsNames:
-    - glowroot.finchaokucoes.com.br
-  issuerRef:
-    name: letsencrypt-production
-    kind: ClusterIssuer
-
