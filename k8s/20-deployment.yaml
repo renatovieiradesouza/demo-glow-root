@@ -13,6 +13,30 @@ spec:
       labels:
         app: demo-java
     spec:
+      tolerations:
+        - key: "infra"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+      nodeSelector:
+        infra: "true"
+      initContainers:
+        - name: glowroot-download
+          image: curlimages/curl:8.8.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: GLOWROOT_VERSION
+              value: "0.14.4"
+          command:
+            - /bin/sh
+            - -c
+            - >
+              set -euo pipefail;
+              mkdir -p /opt/glowroot;
+              curl -fsSL https://github.com/glowroot/glowroot/releases/download/v${GLOWROOT_VERSION}/glowroot-${GLOWROOT_VERSION}-dist.zip -o /tmp/glowroot.zip;
+              unzip -q /tmp/glowroot.zip -d /opt;
+              mv /opt/glowroot-${GLOWROOT_VERSION}/* /opt/glowroot/;
+              rm -rf /tmp/glowroot.zip /opt/glowroot-${GLOWROOT_VERSION}
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -20,7 +44,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: demo-java
-          image: registry.example.com/demo-java:latest
+          image: devopsfinch/demo-java-glowroot:1.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080

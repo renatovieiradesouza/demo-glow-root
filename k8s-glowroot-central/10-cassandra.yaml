@@ -54,6 +54,10 @@ spec:
           operator: "Equal"
           value: "true"
           effect: "NoSchedule"
+      nodeSelector:
+        infra: "true"          
+      nodeSelector:
+        infra: "true"
       containers:
         - name: cassandra
           image: cassandra:4.1
