@@ -37,7 +37,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: demo-java
-          image: registry.example.com/demo-java:latest
+          image: devopsfinch/demo-java-glowroot:1.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
