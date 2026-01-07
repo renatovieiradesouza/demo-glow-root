@@ -13,6 +13,23 @@ spec:
       labels:
         app: demo-java
     spec:
+      initContainers:
+        - name: glowroot-download
+          image: curlimages/curl:8.8.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: GLOWROOT_VERSION
+              value: "0.14.4"
+          command:
+            - /bin/sh
+            - -c
+            - >
+              set -euo pipefail;
+              mkdir -p /opt/glowroot;
+              curl -fsSL https://github.com/glowroot/glowroot/releases/download/v${GLOWROOT_VERSION}/glowroot-${GLOWROOT_VERSION}-dist.zip -o /tmp/glowroot.zip;
+              unzip -q /tmp/glowroot.zip -d /opt;
+              mv /opt/glowroot-${GLOWROOT_VERSION}/* /opt/glowroot/;
+              rm -rf /tmp/glowroot.zip /opt/glowroot-${GLOWROOT_VERSION}
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
