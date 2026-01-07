@@ -21,11 +21,10 @@ spec:
                 name: glowroot-central
                 port:
                   name: ui
-  # TLS opcional: descomente se tiver cert-manager/ClusterIssuer configurado
-  # tls:
-  #   - hosts:
-  #       - glowroot.finchaokucoes.com.br
-  #     secretName: glowroot-tls
+  tls:
+    - hosts:
+        - glowroot.finchaokucoes.com.br
+      secretName: finch-tls-cert
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
