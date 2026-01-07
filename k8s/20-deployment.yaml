@@ -13,6 +13,13 @@ spec:
       labels:
         app: demo-java
     spec:
+      tolerations:
+        - key: "infra"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+      nodeSelector:
+        infra: "true"
       initContainers:
         - name: glowroot-download
           image: curlimages/curl:8.8.0

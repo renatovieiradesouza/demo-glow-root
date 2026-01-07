@@ -64,6 +64,8 @@ spec:
           operator: "Equal"
           value: "true"
           effect: "NoSchedule"
+      nodeSelector:
+        infra: "true"
       containers:
         - name: glowroot-central
           image: glowroot/glowroot-central:0.14.4

@@ -55,6 +55,8 @@ spec:
           value: "true"
           effect: "NoSchedule"
       nodeSelector:
+        infra: "true"          
+      nodeSelector:
         infra: "true"
       containers:
         - name: cassandra
