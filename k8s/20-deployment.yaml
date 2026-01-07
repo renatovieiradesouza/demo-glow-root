@@ -60,12 +60,17 @@ spec:
           ports:
             - containerPort: 8080
               name: http
-          envFrom:
-            - configMapRef:
-                name: demo-java-config
           env:
             - name: JAVA_TOOL_OPTIONS
               value: "-javaagent:/opt/glowroot/glowroot.jar -Dglowroot.collector.address=$(GLOWROOT_COLLECTOR)"
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres.demo-app.svc.cluster.local:5432/appdb"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "finch"
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "pwdfinch"
+            - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+              value: "update"
           readinessProbe:
             httpGet:
               path: /actuator/health

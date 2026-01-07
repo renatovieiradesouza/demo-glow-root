@@ -6,4 +6,8 @@ metadata:
 data:
   GLOWROOT_COLLECTOR: "glowroot-central.observability.svc.cluster.local:8181"
   SERVER_PORT: "8080"
+  SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres.demo-app.svc.cluster.local:5432/appdb"
+  SPRING_DATASOURCE_USERNAME: "appuser"
+  SPRING_DATASOURCE_PASSWORD: "changeme"
+  SPRING_JPA_HIBERNATE_DDL_AUTO: "update"
 
