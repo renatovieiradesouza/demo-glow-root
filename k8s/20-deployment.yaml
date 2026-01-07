@@ -24,6 +24,9 @@ spec:
         - name: glowroot-download
           image: curlimages/curl:8.8.0
           imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
           env:
             - name: GLOWROOT_VERSION
               value: "0.14.4"
@@ -37,6 +40,9 @@ spec:
               unzip -q /tmp/glowroot.zip -d /opt;
               mv /opt/glowroot-${GLOWROOT_VERSION}/* /opt/glowroot/;
               rm -rf /tmp/glowroot.zip /opt/glowroot-${GLOWROOT_VERSION}
+          volumeMounts:
+            - name: glowroot
+              mountPath: /opt/glowroot
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
