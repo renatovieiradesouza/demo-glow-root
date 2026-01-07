@@ -41,7 +41,8 @@ spec:
               rm -rf /opt/glowroot/*;
               curl -fsSL https://github.com/glowroot/glowroot/releases/download/v${GLOWROOT_VERSION}/glowroot-${GLOWROOT_VERSION}-dist.zip -o /tmp/glowroot.zip;
               unzip -q /tmp/glowroot.zip -d /tmp/glowroot-extract;
-              mv /tmp/glowroot-extract/glowroot-${GLOWROOT_VERSION}/. /opt/glowroot/;
+              ROOT=$(find /tmp/glowroot-extract -maxdepth 1 -type d -name "glowroot-*"); \
+              mv "${ROOT}/"* /opt/glowroot/;
               rm -rf /tmp/glowroot.zip /tmp/glowroot-extract
           volumeMounts:
             - name: glowroot
