@@ -36,13 +36,14 @@ spec:
             - -c
             - >
               set -euo pipefail;
-              apk add --no-cache curl unzip;
+              apk add --no-cache curl unzip coreutils;
               mkdir -p /opt/glowroot;
               rm -rf /opt/glowroot/*;
               curl -fsSL https://github.com/glowroot/glowroot/releases/download/v${GLOWROOT_VERSION}/glowroot-${GLOWROOT_VERSION}-dist.zip -o /tmp/glowroot.zip;
               unzip -q /tmp/glowroot.zip -d /tmp/glowroot-extract;
-              ROOT=$(find /tmp/glowroot-extract -maxdepth 1 -type d -name "glowroot-*"); \
-              mv "${ROOT}/"* /opt/glowroot/;
+              ROOT=$(dirname "$(find /tmp/glowroot-extract -type f -name glowroot.jar | head -n1)");
+              if [ -z "$ROOT" ]; then echo "glowroot dir not found"; exit 1; fi;
+              cp -r "$ROOT"/. /opt/glowroot/;
               rm -rf /tmp/glowroot.zip /tmp/glowroot-extract
           volumeMounts:
             - name: glowroot
