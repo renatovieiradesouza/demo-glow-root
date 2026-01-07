@@ -22,7 +22,7 @@ spec:
         infra: "true"
       initContainers:
         - name: glowroot-download
-          image: curlimages/curl:8.8.0
+          image: alpine:3.19
           imagePullPolicy: IfNotPresent
           securityContext:
             runAsUser: 0
@@ -36,6 +36,7 @@ spec:
             - -c
             - >
               set -euo pipefail;
+              apk add --no-cache curl unzip;
               mkdir -p /opt/glowroot;
               curl -fsSL https://github.com/glowroot/glowroot/releases/download/v${GLOWROOT_VERSION}/glowroot-${GLOWROOT_VERSION}-dist.zip -o /tmp/glowroot.zip;
               unzip -q /tmp/glowroot.zip -d /opt;
