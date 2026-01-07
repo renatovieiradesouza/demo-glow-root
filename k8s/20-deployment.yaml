@@ -62,9 +62,7 @@ spec:
               name: http
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-javaagent:/opt/glowroot/glowroot.jar -Dglowroot.collector.address=$(GLOWROOT_COLLECTOR)"
-            - name: GLOWROOT_COLLECTOR
-              value: "glowroot-central.observability.svc.cluster.local:8181"
+              value: "-javaagent:/opt/glowroot/glowroot.jar -Dglowroot.collector.address=glowroot-central.observability.svc.cluster.local:8181 -Dglowroot.agent.id=demo-java"
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres.demo-app.svc.cluster.local:5432/appdb"
             - name: SPRING_DATASOURCE_USERNAME
