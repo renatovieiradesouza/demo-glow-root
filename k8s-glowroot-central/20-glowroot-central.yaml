@@ -13,7 +13,7 @@ data:
     cassandra.contactPoints=cassandra-client.observability.svc.cluster.local
     cassandra.port=9042
     cassandra.keyspace=glowroot
-    cassandra.consistencyLevel=QUORUM
+    cassandra.consistencyLevel=ONE
     cassandra.localDatacenter=dc1
     cassandra.username=
     cassandra.password=
@@ -22,7 +22,7 @@ data:
     glowroot.storage.cassandra.contactPoints=cassandra-client.observability.svc.cluster.local
     glowroot.storage.cassandra.port=9042
     glowroot.storage.cassandra.keyspace=glowroot
-    glowroot.storage.cassandra.consistencyLevel=QUORUM
+    glowroot.storage.cassandra.consistencyLevel=ONE
     glowroot.storage.cassandra.localDatacenter=dc1
 ---
 apiVersion: v1
