@@ -20,8 +20,11 @@ spec:
               service:
                 name: glowroot-central
                 port:
+                  # Porta do collector (gRPC/HTTP) exposta pelo Service do Glowroot Central
                   number: 8181
   tls:
     - hosts:
         - glowroot-collector.finchsolucoes.com.br
-      secretName: finch-tls-cert 
+      secretName: finch-tls-cert
+
+
