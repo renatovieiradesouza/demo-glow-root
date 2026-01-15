@@ -62,7 +62,7 @@ spec:
               name: http
           env:
             - name: JAVA_TOOL_OPTIONS
-              value: "-javaagent:/opt/glowroot/glowroot.jar -Dglowroot.collector.address=glowroot-central.observability.svc.cluster.local:8181 -Dglowroot.agent.id=demo-java"
+              value: "-javaagent:/opt/glowroot/glowroot.jar -Dglowroot.collector.address=172.16.240.127:8181 -Dglowroot.agent.id=demo-java"
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres.demo-app.svc.cluster.local:5432/appdb"
             - name: SPRING_DATASOURCE_USERNAME
@@ -90,10 +90,10 @@ spec:
           resources:
             requests:
               cpu: 200m
-              memory: 512Mi
+              memory: 300Mi
             limits:
-              cpu: 1
-              memory: 1Gi
+              cpu: 300m
+              memory: 500Mi
           volumeMounts:
             - name: glowroot
               mountPath: /opt/glowroot

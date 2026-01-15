@@ -4,7 +4,7 @@ metadata:
   name: demo-java-config
   namespace: demo-app
 data:
-  GLOWROOT_COLLECTOR: "glowroot-central.observability.svc.cluster.local:8181"
+  GLOWROOT_COLLECTOR: "172.16.240.127:8181"
   SERVER_PORT: "8080"
   SPRING_DATASOURCE_URL: "jdbc:postgresql://postgres.demo-app.svc.cluster.local:5432/appdb"
   SPRING_DATASOURCE_USERNAME: "appuser"
