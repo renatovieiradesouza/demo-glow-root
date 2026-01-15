@@ -108,6 +108,20 @@ spec:
             runAsUser: 1000
             runAsGroup: 1000
             allowPrivilegeEscalation: false
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            # Evita concentrar múltiplos pods do Glowroot Central no mesmo nó
+            # (espalha os pods entre os nodes disponíveis).
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: app
+                      operator: In
+                      values:
+                        - glowroot-central
+                topologyKey: kubernetes.io/hostname
       restartPolicy: Always
       volumes:
         - name: config
