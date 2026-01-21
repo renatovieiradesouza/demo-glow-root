@@ -1,0 +1,37 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: otel-poc
+nodes:
+  - role: control-plane
+    extraPortMappings:
+      # HTTP
+      - containerPort: 80
+        hostPort: 80
+        protocol: TCP
+
+      # HTTPS
+      - containerPort: 443
+        hostPort: 443
+        protocol: TCP
+
+    kubeadmConfigPatches:
+      - |
+        kind: ClusterConfiguration
+        apiServer:
+          extraArgs:
+            authorization-mode: Node,RBAC
+
+  # Node "infra" para rodar o OTel Collector e a app (seus manifests usam nodeSelector infra=true
+  # e toleration dedicated=infra:NoSchedule)
+  - role: worker
+    kubeadmConfigPatches:
+      - |
+        kind: JoinConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "infra=true"
+          taints:
+            - key: dedicated
+              value: infra
+              effect: NoSchedule
+
