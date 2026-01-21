@@ -1,0 +1,152 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboard-providers
+  namespace: observability
+data:
+  dashboards.yaml: |
+    apiVersion: 1
+    providers:
+      - name: 'default'
+        orgId: 1
+        folder: 'OTel'
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: observability
+data:
+  otel-jvm-overview.json: |
+    {
+      "uid": "otel-jvm-overview",
+      "title": "OTel - JVM Overview",
+      "tags": ["otel", "jvm", "kind"],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "version": 1,
+      "refresh": "10s",
+      "time": { "from": "now-30m", "to": "now" },
+      "templating": {
+        "list": [
+          {
+            "name": "datasource",
+            "type": "datasource",
+            "query": "prometheus",
+            "current": { "text": "Prometheus", "value": "Prometheus" }
+          },
+          {
+            "name": "service",
+            "type": "query",
+            "datasource": { "type": "prometheus", "uid": "${datasource}" },
+            "query": "label_values(process_runtime_jvm_memory_usage_bytes, service_name)",
+            "refresh": 2,
+            "includeAll": false,
+            "multi": false,
+            "current": { "text": "demo-otel-app-demo-java", "value": "demo-otel-app-demo-java" }
+          }
+        ]
+      },
+      "panels": [
+        {
+          "type": "text",
+          "title": "Selecionado",
+          "gridPos": { "x": 0, "y": 0, "w": 24, "h": 3 },
+          "options": {
+            "mode": "markdown",
+            "content": "**Service (app):** `$service`  \n**Datasource:** `${datasource:text}`"
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "JVM Heap used (bytes)",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "gridPos": { "x": 0, "y": 3, "w": 12, "h": 8 },
+          "fieldConfig": { "defaults": { "unit": "bytes", "min": 0 } },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (service_name) (process_runtime_jvm_memory_usage_bytes{service_name=\"$service\",type=\"heap\"})",
+              "legendFormat": "{{service_name}}"
+            }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "JVM Non-heap used (bytes)",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "gridPos": { "x": 12, "y": 3, "w": 12, "h": 8 },
+          "fieldConfig": { "defaults": { "unit": "bytes", "min": 0 } },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "sum by (service_name) (process_runtime_jvm_memory_usage_bytes{service_name=\"$service\",type=\"non_heap\"})",
+              "legendFormat": "{{service_name}}"
+            }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "GC avg pause (ms, 5m)",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "gridPos": { "x": 0, "y": 11, "w": 12, "h": 8 },
+          "fieldConfig": { "defaults": { "unit": "ms", "min": 0 } },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "1000 * (sum by (service_name) (rate(process_runtime_jvm_gc_duration_seconds_sum{service_name=\"$service\"}[5m])) / sum by (service_name) (rate(process_runtime_jvm_gc_duration_seconds_count{service_name=\"$service\"}[5m])))",
+              "legendFormat": "{{service_name}}"
+            }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "Threads (count)",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "gridPos": { "x": 12, "y": 11, "w": 12, "h": 8 },
+          "fieldConfig": { "defaults": { "unit": "none", "min": 0 } },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "avg by (service_name) (process_runtime_jvm_threads_count{service_name=\"$service\"})",
+              "legendFormat": "{{service_name}}"
+            }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "CPU utilization (ratio)",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "gridPos": { "x": 0, "y": 19, "w": 12, "h": 8 },
+          "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0, "max": 1 } },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "avg by (service_name) (process_runtime_jvm_cpu_utilization_ratio{service_name=\"$service\"})",
+              "legendFormat": "{{service_name}}"
+            }
+          ]
+        },
+        {
+          "type": "timeseries",
+          "title": "Classes loaded (current)",
+          "datasource": { "type": "prometheus", "uid": "${datasource}" },
+          "gridPos": { "x": 12, "y": 19, "w": 12, "h": 8 },
+          "fieldConfig": { "defaults": { "unit": "none", "min": 0 } },
+          "targets": [
+            {
+              "refId": "A",
+              "expr": "avg by (service_name) (process_runtime_jvm_classes_current_loaded{service_name=\"$service\"})",
+              "legendFormat": "{{service_name}}"
+            }
+          ]
+        }
+      ]
+    }
+
+

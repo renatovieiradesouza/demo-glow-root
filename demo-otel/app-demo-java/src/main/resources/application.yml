@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: demo-otel-app-demo-java
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/demo}
+    username: ${SPRING_DATASOURCE_USERNAME:demo}
+    password: ${SPRING_DATASOURCE_PASSWORD:demo}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      # em docker-compose o Postgres pode levar alguns segundos; evita falhar no boot
+      initialization-fail-timeout: 60000
+
+  jpa:
+    # evita erro de Dialect quando a conexão ainda não está pronta no startup
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: false
+
+server:
+  port: ${SERVER_PORT:8080}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+

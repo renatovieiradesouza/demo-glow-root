@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-otel-app
+  namespace: demo-otel-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo-otel-app
+  template:
+    metadata:
+      labels:
+        app: demo-otel-app
+    spec:
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "infra"
+          effect: "NoSchedule"
+      nodeSelector:
+        infra: "true"
+      containers:
+        - name: app
+          # você precisa buildar/pushar essa imagem para seu registry (ou usar um registry local do cluster)
+          image: demo-otel-app-demo-java:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: demo-otel-app-config
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 50m
+              memory: 192Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi
+
+

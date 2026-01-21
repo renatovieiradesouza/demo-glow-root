@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-collector
+  namespace: demo-otel
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otel-collector
+  template:
+    metadata:
+      labels:
+        app: otel-collector
+    spec:
+      serviceAccountName: otel-collector
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "infra"
+          effect: "NoSchedule"
+      nodeSelector:
+        infra: "true"
+      containers:
+        - name: otel-collector
+          image: otel/opentelemetry-collector:0.96.0
+          imagePullPolicy: IfNotPresent
+          args: ["--config=/conf/otel-collector.yaml"]
+          ports:
+            - name: otlp-grpc
+              containerPort: 4317
+              protocol: TCP
+            - name: otlp-http
+              containerPort: 4318
+              protocol: TCP
+            - name: metrics
+              containerPort: 8888
+              protocol: TCP
+            - name: prom-metrics
+              containerPort: 9464
+              protocol: TCP
+            - name: health
+              containerPort: 13133
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: health
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /
+              port: health
+            initialDelaySeconds: 10
+            periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 6
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          volumeMounts:
+            - name: otel-collector-config
+              mountPath: /conf
+              readOnly: true
+      volumes:
+        - name: otel-collector-config
+          configMap:
+            name: otel-collector-config
+
+

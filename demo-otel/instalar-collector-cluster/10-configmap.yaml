@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-collector-config
+  namespace: demo-otel
+data:
+  otel-collector.yaml: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+
+    processors:
+      memory_limiter:
+        check_interval: 2s
+        limit_mib: 96
+        spike_limit_mib: 24
+      batch:
+        send_batch_size: 512
+        timeout: 5s
+
+    exporters:
+      logging:
+        verbosity: normal
+      otlphttp/tempo:
+        endpoint: http://tempo.observability.svc.cluster.local:4318
+      prometheus:
+        endpoint: 0.0.0.0:9464
+
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+
+    service:
+      telemetry:
+        metrics:
+          address: 0.0.0.0:8888
+      extensions: [health_check]
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters: [logging, otlphttp/tempo]
+        metrics:
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters: [prometheus]
+        # logs ficam fora do OTel (ex.: Promtail/Loki)
+
+
