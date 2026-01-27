@@ -1,0 +1,341 @@
+# values.yaml — OpenTelemetry Operator (Helm)
+#
+# Este arquivo foi alinhado com o `values.yaml` upstream do chart
+# `open-telemetry/opentelemetry-operator` (repo `opentelemetry-helm-charts`),
+# e mantém comentários explicando o propósito de cada bloco/chave.
+#
+# Referências:
+# - Operator (Kubernetes): https://opentelemetry.io/docs/platforms/kubernetes/operator/
+# - Helm charts (Kubernetes): https://opentelemetry.io/pt/docs/platforms/kubernetes/helm/
+#
+# Dica prática (on-prem):
+# - Fixe versões (chart + imagens) e, se necessário, aponte `repository` para seu registry interno.
+
+# Default values for opentelemetry-operator.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# -- Override de namespace para instalar os recursos (quando você não quer usar `--namespace`/release ns).
+# Top level field indicating an override for the namespace
+namespaceOverride: ""
+
+# -- Réplicas do Operator (controller-manager).
+# Kind/teste: 1. Produção: 1–2 conforme necessidade de HA/recursos.
+replicaCount: 1
+
+## The number of old history to retain to allow rollback.
+##
+revisionHistoryLimit: 10
+
+## Provide a name in place of opentelemetry-operator (includes the chart's release name).
+##
+nameOverride: ""
+
+## Fully override the name (excludes the chart's release name).
+##
+fullnameOverride: ""
+
+## Reference one or more secrets to be used when pulling images from authenticated repositories.
+## Ex.: registry interno (on-prem).
+imagePullSecrets: []
+
+## Kubernetes cluster domain suffix (normalmente `cluster.local`).
+clusterDomain: cluster.local
+
+# Common labels to add to all otel-operator resources. Evaluated as a template.
+additionalLabels: {}
+
+## Pod Disruption Budget configuration
+## Recomendado:
+## - Kind: geralmente desnecessário
+## - Produção: habilitar conforme HA (replicas > 1)
+pdb:
+  ## Enable/disable a Pod Disruption Budget creation
+  create: false
+  ## Minimum number/percentage of pods that should remain scheduled
+  minAvailable: 1
+  ## Maximum number/percentage of pods that may be made unavailable
+  maxUnavailable: ""
+
+## Manager: imagem/config do controller-manager do Operator e imagens auxiliares
+manager:
+  # Imagem do Operator
+  image:
+    repository: ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator
+    # Se vazio, normalmente usa appVersion do chart.
+    # Em produção, você pode fixar aqui ou fixar o chart e deixar vazio.
+    tag: ""
+    imagePullPolicy: IfNotPresent
+
+  # Imagem padrão do Collector usada por CRs gerenciadas pelo Operator (quando aplicável)
+  collectorImage:
+    repository: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-k8s
+    tag: 0.141.0
+
+  # OpAMP bridge (se você usar esse fluxo)
+  opampBridgeImage:
+    repository: ""
+    tag: ""
+
+  # Target Allocator (para PrometheusReceiver em modo escalado/distribuído)
+  targetAllocatorImage:
+    repository: ""
+    tag: ""
+
+  # Imagens de auto-instrumentation (injeção via Instrumentation CR)
+  autoInstrumentationImage:
+    java:
+      repository: ""
+      tag: ""
+    nodejs:
+      repository: ""
+      tag: ""
+    python:
+      repository: ""
+      tag: ""
+    dotnet:
+      repository: ""
+      tag: ""
+    apacheHttpd:
+      repository: ""
+      tag: ""
+    # To enable Go instrumentation, manager.autoInstrumentation.go.enabled must be set to true
+    go:
+      repository: ""
+      tag: ""
+
+  # The Go instrumentation support in the operator is disabled by default.
+  autoInstrumentation:
+    go:
+      enabled: false
+
+  # Se true, não falhar quando CRDs de Collector não existirem (útil em migrações).
+  ignoreMissingCollectorCRDs: false
+
+  # Feature Gates (deprecated) — prefira `featureGatesMap` quando for usar.
+  featureGates: ""
+
+  # featureGatesMap habilita/desabilita gates e pode criar pré-requisitos.
+  featureGatesMap: {}
+  # operator.targetallocator.mtls: false
+  # operator.targetallocator.fallbackstrategy: false
+  # operator.collector.targetallocatorcr: false
+  # operator.golang.flags: false
+  # operator.collector.default.config: false
+
+  # Portas expostas pelo manager
+  ports:
+    metricsPort: 8080
+    webhookPort: 9443
+    healthzPort: 8081
+
+  # Requests/limits do manager (recomendado ajustar em on-prem)
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+  ## Adds additional environment variables. This property will be deprecated. Please use extraEnvs instead.
+  ## e.g ENV_VAR: env_value
+  env:
+    # Mantém webhooks habilitados (recomendado).
+    ENABLE_WEBHOOKS: "true"
+
+  # Extra definitions of environment variables.
+  extraEnvs: []
+  # - name: GOMEMLIMIT
+  #   valueFrom:
+  #     resourceFieldRef:
+  #       containerName: manager
+  #       resource: limits.memory
+
+  # -- ServiceAccount do manager
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+
+  # ServiceMonitor para Prometheus (apenas se você usa Prometheus Operator/CRDs)
+  serviceMonitor:
+    enabled: false
+    extraLabels: {}
+    annotations: {}
+    metricsEndpoints:
+      - port: metrics
+    relabelings: []
+    metricRelabelings: []
+
+  deploymentAnnotations: {}
+  serviceAnnotations: {}
+
+  podAnnotations: {}
+  podLabels: {}
+
+  # PrometheusRule (alertas) — só habilite se você usa Prometheus Operator.
+  prometheusRule:
+    enabled: false
+    groups: []
+    defaultRules:
+      enabled: false
+      additionalRuleLabels: {}
+      additionalRuleAnnotations: {}
+      duration: 5m
+    extraLabels: {}
+    annotations: {}
+    runbookUrl: ""
+
+  # RBAC automático para collectors gerenciados (habilite apenas se necessário)
+  createRbacPermissions: false
+
+  # Args extras do manager
+  extraArgs: []
+
+  # Leader election (recomendado true, especialmente com replicas > 1)
+  leaderElection:
+    enabled: true
+
+  # Vertical Pod Autoscaler (VPA) do manager
+  verticalPodAutoscaler:
+    enabled: false
+    controlledResources: []
+    maxAllowed: {}
+    minAllowed: {}
+    updatePolicy:
+      updateMode: Auto
+      minReplicas: 2
+
+  # Rolling automático do manager (geralmente false)
+  rolling: false
+
+  # SecurityContext do container manager (baseline seguro)
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+## kube-rbac-proxy: proxy para expor métricas com RBAC (comum quando ServiceMonitor é usado)
+kubeRBACProxy:
+  enabled: true
+  image:
+    repository: quay.io/brancz/kube-rbac-proxy
+    tag: v0.20.0
+  ports:
+    proxyPort: 8443
+  resources:
+    requests:
+      cpu: 5m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  extraArgs: []
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+
+## Admission webhooks: validação/mutação e injeção de sidecar/auto-instrumentation
+admissionWebhooks:
+  create: true
+  servicePort: 443
+  # Fail = fail-close (mais seguro). Em ambientes muito restritivos pode precisar ajustar.
+  failurePolicy: Fail
+  secretName: ""
+
+  # Política específica para injeção em pods (fail-open por padrão)
+  pods:
+    failurePolicy: Ignore
+
+  namePrefix: ""
+  timeoutSeconds: 10
+  namespaceSelector: {}
+  objectSelector: {}
+
+  # Opção 1 (recomendada): cert-manager gera certificado self-signed
+  certManager:
+    enabled: true
+    issuerRef: {}
+    certificateAnnotations: {}
+    issuerAnnotations: {}
+    duration: ""
+    renewBefore: ""
+
+  # Opção 2: Helm gera certificado self-signed (use quando NÃO tem cert-manager)
+  autoGenerateCert:
+    enabled: true
+    recreate: true
+    certPeriodDays: 365
+
+  # Opção 3: cert/key/ca próprios (geralmente corporativo/on-prem)
+  certFile: ""
+  keyFile: ""
+  caFile: ""
+
+  serviceAnnotations: {}
+  secretAnnotations:
+    "helm.sh/hook": "pre-install,pre-upgrade"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
+  secretLabels: {}
+
+## CRDs do OpenTelemetry Operator (recomendado instalar via Helm para consistência)
+crds:
+  create: true
+
+## Roles/RoleBindings (namespaced) — permissões do operator
+role:
+  create: true
+
+## ClusterRoles/ClusterRoleBindings — permissões cluster-wide do operator
+clusterRole:
+  create: true
+
+# Scheduling
+affinity: {}
+tolerations: []
+nodeSelector:
+  kubernetes.io/os: linux
+topologySpreadConstraints: []
+
+# Se true, roda em hostNetwork (raramente necessário; pode afetar webhooks/ports)
+hostNetwork: false
+
+# Allows for pod scheduler prioritisation
+priorityClassName: ""
+
+## Pod SecurityContext (baseline seguro). Ajuste se seu cluster exigir outros IDs/grupos.
+securityContext:
+  runAsGroup: 65532
+  runAsNonRoot: true
+  runAsUser: 65532
+  fsGroup: 65532
+
+# Automount do token de ServiceAccount
+automountServiceAccountToken: true
+
+# Imagem usada por testes do chart (geralmente irrelevante para instalação normal)
+testFramework:
+  image:
+    repository: busybox
+    tag: latest
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  resources: {}
+
+

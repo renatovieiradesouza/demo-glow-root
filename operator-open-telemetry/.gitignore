@@ -1,0 +1,9 @@
+# Binários/ferramentas baixadas localmente
+tools/helm/helm
+
+# Arquivos temporários
+*.tmp
+*.swp
+.DS_Store
+
+
