@@ -21,7 +21,11 @@ namespaceOverride: ""
 
 # -- Réplicas do Operator (controller-manager).
 # Kind/teste: 1. Produção: 1–2 conforme necessidade de HA/recursos.
-replicaCount: 1
+# -- Réplicas do Operator (controller-manager).
+# HA (recomendado em produção): 2+
+# Observação: HA real exige pelo menos 2 nós; em cluster de 1 nó (ex.: Kind single-node)
+# as réplicas vão acabar no mesmo nó.
+replicaCount: 2
 
 ## The number of old history to retain to allow rollback.
 ##
@@ -51,8 +55,10 @@ additionalLabels: {}
 ## - Produção: habilitar conforme HA (replicas > 1)
 pdb:
   ## Enable/disable a Pod Disruption Budget creation
-  create: false
+  # Recomendado para HA: evitar downtime durante drain/upgrade do nó.
+  create: true
   ## Minimum number/percentage of pods that should remain scheduled
+  # Com replicaCount=2, manter 1 disponível é um bom baseline.
   minAvailable: 1
   ## Maximum number/percentage of pods that may be made unavailable
   maxUnavailable: ""
@@ -301,11 +307,32 @@ clusterRole:
   create: true
 
 # Scheduling
-affinity: {}
+# Scheduling/HA
+# - anti-affinity tenta espalhar as réplicas em nós diferentes (hostname).
+# - se você quiser "hard" (não permitir no mesmo nó), troque para
+#   requiredDuringSchedulingIgnoredDuringExecution, mas isso pode impedir scheduling
+#   em clusters com poucos nós.
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          topologyKey: kubernetes.io/hostname
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/name: opentelemetry-operator
 tolerations: []
 nodeSelector:
   kubernetes.io/os: linux
-topologySpreadConstraints: []
+# Espalhamento adicional entre nós (melhor para HA quando há 2+ nós).
+# Em cluster single-node pode deixar o scheduler sem conseguir agendar se `DoNotSchedule`.
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/name: opentelemetry-operator
 
 # Se true, roda em hostNetwork (raramente necessário; pode afetar webhooks/ports)
 hostNetwork: false
