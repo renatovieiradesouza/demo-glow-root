@@ -14,7 +14,7 @@
     <artifactId>demo-otel-app-demo-java</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>demo-otel-app-demo-java</name>
-    <description>Demo Spring Boot 3 + PostgreSQL + OpenTelemetry (auto-instrumentation)</description>
+    <description>Demo Spring Boot 3 + PostgreSQL</description>
 
     <properties>
         <java.version>21</java.version>

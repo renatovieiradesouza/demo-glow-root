@@ -11,17 +11,4 @@ data:
   SPRING_DATASOURCE_USERNAME: "demo"
   SPRING_DATASOURCE_PASSWORD: "demo"
 
-  # OpenTelemetry -> Collector no namespace demo-otel (instalar-collector-cluster)
-  OTEL_SERVICE_NAME: "demo-otel-app-demo-java"
-  OTEL_RESOURCE_ATTRIBUTES: "deployment.environment=cluster,service.namespace=demo-otel-app"
-
-  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector.demo-otel.svc.cluster.local:4318"
-  OTEL_EXPORTER_OTLP_PROTOCOL: "http/protobuf"
-  OTEL_TRACES_EXPORTER: "otlp"
-  OTEL_METRICS_EXPORTER: "otlp"
-  OTEL_LOGS_EXPORTER: "none"
-
-  # JVM/runtime metrics do Java Agent
-  OTEL_INSTRUMENTATION_RUNTIME_METRICS_ENABLED: "true"
-
 

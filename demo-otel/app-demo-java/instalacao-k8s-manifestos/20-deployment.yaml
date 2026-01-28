@@ -12,6 +12,10 @@ spec:
     metadata:
       labels:
         app: demo-otel-app
+      annotations:
+        # OpenTelemetry Operator auto-instrumentation (Java)
+        # Requer um recurso `Instrumentation` no namespace (ver 05-instrumentation.yaml).
+        instrumentation.opentelemetry.io/inject-java: "true"
     spec:
       tolerations:
         - key: "dedicated"
