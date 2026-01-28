@@ -359,9 +359,9 @@ affinity:
               app.kubernetes.io/name: opentelemetry-operator
 
 tolerations:
-  - key: "infra"
+  - key: "dedicated"
     operator: "Equal"
-    value: "true"
+    value: "infra"
     effect: "NoSchedule"
 
 nodeSelector:
