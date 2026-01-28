@@ -1,0 +1,2 @@
+error: resource mapping not found for name: "" namespace: "" from "instalacao-k8s-manifestos/kustomization.yaml": no matches for kind "Kustomization" in version "kustomize.config.k8s.io/v1beta1"
+ensure CRDs are installed first
