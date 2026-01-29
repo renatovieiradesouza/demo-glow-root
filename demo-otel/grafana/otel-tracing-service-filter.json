@@ -4,27 +4,30 @@
     "schemaVersion": 39,
     "version": 1,
     "refresh": "10s",
+  
     "templating": {
       "list": [
+        {
+          "name": "datasource",
+          "type": "datasource",
+          "label": "Tempo Datasource",
+          "query": "tempo",
+          "current": {},
+          "refresh": 1
+        },
         {
           "name": "service",
           "type": "query",
           "label": "Service",
-          "datasource": {
-            "type": "tempo",
-            "uid": "TEMPO_DS_UID"
-          },
+          "datasource": "$datasource",
           "query": "labelValues(service.name)",
           "refresh": 2,
           "includeAll": true,
-          "multi": false,
-          "current": {
-            "text": "All",
-            "value": "$__all"
-          }
+          "multi": false
         }
       ]
     },
+  
     "panels": [
       {
         "id": 1,
@@ -36,10 +39,7 @@
           "w": 24,
           "h": 10
         },
-        "datasource": {
-          "type": "tempo",
-          "uid": "TEMPO_DS_UID"
-        },
+        "datasource": "$datasource",
         "targets": [
           {
             "refId": "A",
@@ -53,11 +53,7 @@
           "cellHeight": "sm"
         },
         "fieldConfig": {
-          "defaults": {
-            "custom": {
-              "align": "auto"
-            }
-          },
+          "defaults": {},
           "overrides": []
         }
       }
