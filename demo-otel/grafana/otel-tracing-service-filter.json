@@ -1,4 +1,18 @@
 {
+  "__inputs": [
+    {
+      "name": "DS_TEMPO",
+      "label": "Tempo",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "tempo",
+      "pluginName": "Tempo"
+    }
+  ],
+  "__requires": [
+    { "type": "grafana", "id": "grafana", "name": "Grafana", "version": "11.2.0" },
+    { "type": "datasource", "id": "tempo", "name": "Tempo", "version": "1.0.0" }
+  ],
   "uid": "otel-tracing-service-filter",
   "title": "OTel - Tracing (Service Filter)",
   "tags": ["otel", "tracing", "tempo"],
@@ -13,8 +27,11 @@
         "name": "service",
         "type": "query",
         "label": "Service",
-        "datasource": "Tempo",
-        "query": "label_values(resource.service.name)",
+        "datasource": "${DS_TEMPO}",
+        "query": {
+          "queryType": "labelValues",
+          "label": "resource.service.name"
+        },
         "refresh": 2,
         "includeAll": false,
         "multi": false
