@@ -4,7 +4,6 @@
     "schemaVersion": 39,
     "version": 1,
     "refresh": "10s",
-  
     "templating": {
       "list": [
         {
@@ -13,7 +12,7 @@
           "label": "Service",
           "datasource": {
             "type": "tempo",
-            "uid": "__TEMPO__"
+            "uid": "TEMPO_DS_UID"
           },
           "query": "labelValues(service.name)",
           "refresh": 2,
@@ -22,19 +21,16 @@
         }
       ]
     },
-  
     "panels": [
       {
         "id": 1,
         "type": "table",
-        "title": "Tempo Traces",
+        "title": "Traces",
         "gridPos": { "x": 0, "y": 0, "w": 24, "h": 10 },
-  
         "datasource": {
           "type": "tempo",
-          "uid": "__TEMPO__"
+          "uid": "TEMPO_DS_UID"
         },
-  
         "targets": [
           {
             "refId": "A",
@@ -42,17 +38,7 @@
             "query": "{ service.name =~ \"$service\" }",
             "limit": 50
           }
-        ],
-  
-        "options": {
-          "showHeader": true,
-          "cellHeight": "sm"
-        },
-  
-        "fieldConfig": {
-          "defaults": {},
-          "overrides": []
-        }
+        ]
       }
     ]
   }
