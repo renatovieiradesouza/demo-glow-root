@@ -9,15 +9,17 @@
         {
           "name": "service",
           "type": "query",
-          "label": "Service",
           "datasource": {
             "type": "tempo",
             "uid": "TEMPO_DS_UID"
           },
-          "query": "labelValues(service.name)",
+          "query": {
+            "query": "{service.name=*}",
+            "type": "traceql"
+          },
           "refresh": 2,
           "includeAll": true,
-          "multi": false
+          "label": "Service"
         }
       ]
     },
