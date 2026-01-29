@@ -1,0 +1,37 @@
+{
+  "uid": "otel-tracing-service-filter",
+  "title": "OTel - Tracing (Service Filter)",
+  "tags": ["otel", "tracing", "tempo"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "time": { "from": "now-30m", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "type": "query",
+        "label": "Service",
+        "datasource": "Tempo",
+        "query": "label_values(resource.service.name)",
+        "refresh": 2,
+        "includeAll": false,
+        "multi": false
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "text",
+      "title": "Filtro",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 3 },
+      "options": {
+        "mode": "markdown",
+        "content": "**Service selecionado:** `$service`"
+      }
+    }
+  ]
+}
+
+

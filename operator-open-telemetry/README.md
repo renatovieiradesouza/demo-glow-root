@@ -123,6 +123,22 @@ helm uninstall otel-operator -n opentelemetry-operator-system
 /home/renato/projetos/pessoal/demo-java-glow-root/operator-open-telemetry/scripts/04-install-otel-operator.sh
 ```
 
+## Instalar "do repo baixo" (chart local/offline)
+
+Se você quer deixar o chart já baixado no disco e instalar a partir dele:
+
+1) Baixar o chart do Operator para `charts/opentelemetry-operator/`:
+
+```bash
+/home/renato/projetos/pessoal/demo-java-glow-root/operator-open-telemetry/scripts/03-pull-otel-operator-chart.sh
+```
+
+2) Instalar usando o chart local + `values.yaml` do repo:
+
+```bash
+/home/renato/projetos/pessoal/demo-java-glow-root/operator-open-telemetry/scripts/05-install-otel-operator-localchart.sh
+```
+
 6) Remover (se precisar):
 
 ```bash
