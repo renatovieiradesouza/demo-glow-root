@@ -1,38 +1,31 @@
 {
-    "title": "Tempo - Traces Table",
+    "title": "Tempo - Traces Table (Clean)",
     "timezone": "browser",
     "schemaVersion": 39,
     "version": 1,
     "refresh": "10s",
+  
     "templating": {
       "list": [
         {
           "name": "service",
           "type": "query",
-          "datasource": {
-            "type": "tempo",
-            "uid": "TEMPO_DS_UID"
-          },
-          "query": {
-            "query": "{service.name=*}",
-            "type": "traceql"
-          },
+          "label": "Service",
+          "query": "labelValues(service.name)",
           "refresh": 2,
           "includeAll": true,
-          "label": "Service"
+          "multi": false
         }
       ]
     },
+  
     "panels": [
       {
         "id": 1,
         "type": "table",
         "title": "Traces",
         "gridPos": { "x": 0, "y": 0, "w": 24, "h": 10 },
-        "datasource": {
-          "type": "tempo",
-          "uid": "TEMPO_DS_UID"
-        },
+  
         "targets": [
           {
             "refId": "A",
@@ -40,7 +33,12 @@
             "query": "{ service.name =~ \"$service\" }",
             "limit": 50
           }
-        ]
+        ],
+  
+        "options": {
+          "showHeader": true,
+          "cellHeight": "sm"
+        }
       }
     ]
   }
