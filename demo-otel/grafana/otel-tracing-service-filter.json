@@ -27,11 +27,9 @@
         "name": "service",
         "type": "query",
         "label": "Service",
-        "datasource": "${DS_TEMPO}",
-        "query": {
-          "queryType": "labelValues",
-          "label": "resource.service.name"
-        },
+        "datasource": { "type": "tempo", "uid": "${DS_TEMPO}" },
+        "query": "label_values(resource.service.name)",
+        "definition": "label_values(resource.service.name)",
         "refresh": 2,
         "includeAll": false,
         "multi": false
