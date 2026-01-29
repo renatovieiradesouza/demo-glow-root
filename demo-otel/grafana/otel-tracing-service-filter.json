@@ -9,17 +9,19 @@
         {
           "name": "service",
           "type": "query",
+          "label": "Service",
           "datasource": {
             "type": "tempo",
             "uid": "TEMPO_DS_UID"
           },
-          "query": {
-            "query": "{service.name=*}",
-            "type": "traceql"
-          },
+          "query": "labelValues(service.name)",
           "refresh": 2,
           "includeAll": true,
-          "label": "Service"
+          "multi": false,
+          "current": {
+            "text": "All",
+            "value": "$__all"
+          }
         }
       ]
     },
@@ -27,8 +29,13 @@
       {
         "id": 1,
         "type": "table",
-        "title": "Traces",
-        "gridPos": { "x": 0, "y": 0, "w": 24, "h": 10 },
+        "title": "Tempo Traces",
+        "gridPos": {
+          "x": 0,
+          "y": 0,
+          "w": 24,
+          "h": 10
+        },
         "datasource": {
           "type": "tempo",
           "uid": "TEMPO_DS_UID"
@@ -40,7 +47,19 @@
             "query": "{ service.name =~ \"$service\" }",
             "limit": 50
           }
-        ]
+        ],
+        "options": {
+          "showHeader": true,
+          "cellHeight": "sm"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "custom": {
+              "align": "auto"
+            }
+          },
+          "overrides": []
+        }
       }
     ]
   }
