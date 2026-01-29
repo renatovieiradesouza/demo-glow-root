@@ -1,15 +1,4 @@
 {
-    "__inputs": [
-      {
-        "name": "DS_TEMPO",
-        "label": "Tempo Datasource",
-        "description": "",
-        "type": "datasource",
-        "pluginId": "tempo",
-        "pluginName": "Tempo"
-      }
-    ],
-  
     "title": "Tempo - Traces Table",
     "timezone": "browser",
     "schemaVersion": 39,
@@ -22,7 +11,10 @@
           "name": "service",
           "type": "query",
           "label": "Service",
-          "datasource": "${DS_TEMPO}",
+          "datasource": {
+            "type": "tempo",
+            "uid": "__TEMPO__"
+          },
           "query": "labelValues(service.name)",
           "refresh": 2,
           "includeAll": true,
@@ -38,7 +30,10 @@
         "title": "Tempo Traces",
         "gridPos": { "x": 0, "y": 0, "w": 24, "h": 10 },
   
-        "datasource": "${DS_TEMPO}",
+        "datasource": {
+          "type": "tempo",
+          "uid": "__TEMPO__"
+        },
   
         "targets": [
           {
