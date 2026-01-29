@@ -365,6 +365,7 @@ tolerations:
     effect: "NoSchedule"
 
 nodeSelector:
+  kubernetes.io/os: linux
   infra: "true"
 
 topologySpreadConstraints:
