@@ -1,0 +1,43 @@
+{
+    "__inputs": [
+      {
+        "name": "DS_TEMPO",
+        "label": "Tempo datasource",
+        "type": "datasource",
+        "pluginId": "tempo",
+        "pluginName": "Tempo"
+      }
+    ],
+    "title": "Tempo - Trace View by ID",
+    "schemaVersion": 39,
+    "version": 1,
+    "templating": {
+      "list": [
+        {
+          "name": "traceId",
+          "type": "textbox",
+          "label": "Trace ID",
+          "query": "",
+          "hide": 0,
+          "includeAll": false
+        }
+      ]
+    },
+    "panels": [
+      {
+        "id": 1,
+        "type": "traces",
+        "title": "Trace Details",
+        "datasource": "${DS_TEMPO}",
+        "targets": [
+          {
+            "refId": "A",
+            "queryType": "traceql",
+            "query": "${traceId}"
+          }
+        ],
+        "gridPos": { "x": 0, "y": 0, "w": 24, "h": 18 }
+      }
+    ]
+  }
+  
