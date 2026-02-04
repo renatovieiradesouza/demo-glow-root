@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo-otel-app-logback
+  namespace: demo-otel-app
+data:
+  logback-spring.xml: |
+    <?xml version="1.0" encoding="UTF-8"?>
+    <configuration>
+
+      <!--
+        Infra-only: este arquivo é montado via ConfigMap no Pod.
+        O OTel Java Agent injeta trace_id/span_id no MDC (quando habilitado),
+        e este pattern garante que os IDs saiam no stdout para o Promtail/Loki correlacionar com tracing.
+      -->
+
+      <property name="SERVICE_NAME" value="${spring.application.name:-demo-otel-app-demo-java}"/>
+
+      <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+          <pattern>
+            %d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX} level=%-5level service=${SERVICE_NAME} trace_id=%X{trace_id:-} span_id=%X{span_id:-} trace_flags=%X{trace_flags:-} [%thread] %logger{36} - %msg%n%ex
+          </pattern>
+        </encoder>
+      </appender>
+
+      <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+      </root>
+    </configuration>
+
+

@@ -32,9 +32,17 @@ spec:
           ports:
             - name: http
               containerPort: 8080
+          env:
+            # Override de logging via infra (sem mexer na app)
+            - name: LOGGING_CONFIG
+              value: "file:/etc/logback/logback-spring.xml"
           envFrom:
             - configMapRef:
                 name: demo-otel-app-config
+          volumeMounts:
+            - name: logback-config
+              mountPath: /etc/logback
+              readOnly: true
           readinessProbe:
             httpGet:
               path: /actuator/health
@@ -58,5 +66,9 @@ spec:
             limits:
               cpu: 300m
               memory: 512Mi
+      volumes:
+        - name: logback-config
+          configMap:
+            name: demo-otel-app-logback
 
 
