@@ -11,6 +11,35 @@ alloy:
           enabled = true
         }
 
+        // =========================
+        // OTLP ingest (traces) from apps
+        // =========================
+        otelcol.receiver.otlp "ingest" {
+          http {
+            endpoint = "0.0.0.0:4318"
+          }
+          grpc {
+            endpoint = "0.0.0.0:4317"
+          }
+
+          output {
+            traces  = [otelcol.processor.batch.traces.input]
+          }
+        }
+
+        otelcol.processor.batch "traces" {
+          output {
+            traces = [otelcol.exporter.otlphttp.tempo.input]
+          }
+        }
+
+        // Envia traces para Tempo (ajuste namespace/DNS se necessário).
+        otelcol.exporter.otlphttp "tempo" {
+          client {
+            endpoint = "http://tempo.observability.svc.cluster.local:4318"
+          }
+        }
+
         discovery.kubernetes "pod" {
           role = "pod"
           selectors {
@@ -93,41 +122,21 @@ alloy:
               }
           }
 
+          // Correlation logs <-> traces:
+          // extrai trace_id/span_id do conteúdo do log (sem promover a label por padrão).
+          // O Logback (injetado via ConfigMap) imprime: trace_id=<32hex> span_id=<16hex>
+          stage.regex {
+            expression = "trace_id=(?P<trace_id>[0-9a-f]{32})"
+          }
+          stage.regex {
+            expression = "span_id=(?P<span_id>[0-9a-f]{16})"
+          }
+
           forward_to = [loki.write.default.receiver]
         }
         loki.write "default" {
           endpoint {
             url = "http://loki-gateway.observabilidade.svc.cluster.local/loki/api/v1/push"
-          }
-        }
-
-        discovery.kubernetes "metrics_targets" {
-          role = "endpoints"
-        }
-
-        discovery.relabel "metrics_relabel" {
-          targets = discovery.kubernetes.metrics_targets.targets
-          rule {
-            source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_scrape"]
-            regex = "true"
-            action = "keep"
-          }
-          rule {
-            source_labels = ["__meta_kubernetes_service_annotation_prometheus_io_path"]
-            regex = "(.+)"
-            action = "replace"
-            target_label = "__metrics_path__"
-          }
-        }
-
-        prometheus.scrape "metrics" {
-          targets = discovery.relabel.metrics_relabel.output
-          forward_to = [prometheus.remote_write.prometheus.receiver]
-        }
-        
-        prometheus.remote_write "prometheus" {
-          endpoint {
-            url = "http://prometheus-server.observabilidade.svc.cluster.local/api/v1/write"
           }
         }
 

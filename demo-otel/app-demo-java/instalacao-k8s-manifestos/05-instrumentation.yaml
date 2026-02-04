@@ -12,6 +12,10 @@ spec:
   env:
     - name: OTEL_EXPORTER_OTLP_PROTOCOL
       value: http/protobuf
+    - name: OTEL_TRACES_EXPORTER
+      value: otlp
+    - name: OTEL_METRICS_EXPORTER
+      value: none
     - name: OTEL_SERVICE_NAME
       value: demo-otel-app-demo-java
     - name: OTEL_RESOURCE_ATTRIBUTES
@@ -20,8 +24,6 @@ spec:
       value: none
     # Correlation logs <-> traces (injeta trace_id/span_id no MDC do Logback)
     - name: OTEL_INSTRUMENTATION_LOGBACK_MDC_ENABLED
-      value: "true"
-    - name: OTEL_INSTRUMENTATION_RUNTIME_METRICS_ENABLED
       value: "true"
 
 
