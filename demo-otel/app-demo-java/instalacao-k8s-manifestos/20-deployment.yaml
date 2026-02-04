@@ -26,8 +26,7 @@ spec:
         infra: "true"
       containers:
         - name: app
-          # você precisa buildar/pushar essa imagem para seu registry (ou usar um registry local do cluster)
-          image: demo-otel-app-demo-java:local
+          image: devopsfinch/demo-otel-app-demo-java:1.0
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -39,7 +38,7 @@ spec:
             httpGet:
               path: /actuator/health
               port: http
-            initialDelaySeconds: 10
+            initialDelaySeconds: 60
             periodSeconds: 10
             timeoutSeconds: 3
             failureThreshold: 6
@@ -47,16 +46,16 @@ spec:
             httpGet:
               path: /actuator/health
               port: http
-            initialDelaySeconds: 30
+            initialDelaySeconds: 60
             periodSeconds: 20
             timeoutSeconds: 3
             failureThreshold: 6
           resources:
             requests:
-              cpu: 50m
-              memory: 192Mi
-            limits:
               cpu: 300m
+              memory: 250Mi
+            limits:
+              cpu: 600m
               memory: 512Mi
 
 
